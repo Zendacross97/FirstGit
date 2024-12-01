@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <h1>Password Keeper</h1>
+    <label for="number">Total password count:</label>
+    <input type="text" id="number" name="number"><br><br>
+    <label for="filter">Search</label>
+    <input type="text" id="filter" name="filter">
+</head><br><br>
+<body>
+  <form id="form" onsubmit="handleFormSubmit(event)">
+    <label for="email">Email Id:</label>
+      <input type="email" id="email" name="email"><br><br>
+    <label for="password">Password:</label>
+      <input type="password" id="password" name="password"><br><br>
+      <button type="submit">Add</button>
+  </form><br>
+  <ul>
+    <h5>All Passwords:</h5>
+  </ul>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.8/axios.min.js"></script>
+<script src="test.js"></script>
+
+</html>
