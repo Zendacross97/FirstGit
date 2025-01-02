@@ -4,15 +4,18 @@ const { text } = require("stream/consumers");
 const server=http.createServer((req,res)=>{
     res.setHeader(`Content-type`,`text/html`);
     if(req.url===`/`){
-        res.end(
-            `
+        fs.readFile(`message.txt`,(err,data)=>{
+            if(err){
+                console.log(err);
+            }
+            res.write(`<h1>${data.toString()}</h1>
             <form action="/message" method="POST">
             <label for="name">Name:</label>
             <input type="text" id="name" name="username">
             <button type="submit">Add</button>
-            </form>
-            `
-        )
+            </form>`);//data=buffer-value(numbers)
+            res.end();
+        });
     }
     else{
         if(req.url==`/message`){
