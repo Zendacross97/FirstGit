@@ -1,0 +1,36 @@
+NPM is a package manager for JavaScript.
+It helps in managing dependencies and packages in a Node.jsproject.
+
+
+Simplifies the process of including third-party libraries and tools in your project.
+Ensures that all team members are using the same versions of dependencies.
+
+
+NPM comes bundled with Node.js, so installing Node.js also installs NPM.
+One can check the version of NPM installed using the command npm -v.
+
+
+You can install packages using the command npm install <package-name>.
+Packages can be installed globally or locally to a project.
+
+
+package.json file contains metadata about the project, lists the dependencies and scripts.
+It is created using the command npm init.
+
+
+npm install: Installs all dependencies listed in package.json.
+npm update: Updates all packages to their latest versions.
+npm uninstall <package-name>: Removes a package from the project.
+The difference between "dependencies" and "devDependencies" in package.json is"dependencies" 
+are needed for both development and production, while "devDependencies" are needed only in development.
+npm install <package> --save-dev command is used to install a package as a dev dependency.
+
+
+One can define custom scripts in the package.jsonfile to automate tasks.
+Scripts section of package.jsonis used to specify the scripts to run commands.
+For example, "start": "node app.js" can be used to start the application.
+
+
+The purpose of nodemon in a Node.js application is to automatically restart the server when file changes are detected.
+The command used to install nodemon globally is npm install -g nodemon.
+The command used to install nodemon locally is npm install nodemon.
