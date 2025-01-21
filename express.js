@@ -1,17 +1,27 @@
-const express=require(`express`);
-const app=express();
+const path = require('path');//to use path module for file path
 
-const bodyParser=require(`body-parser`);
+const express=require(`express`);//to use express
+const app=express();//to create an express application
+
+const bodyParser=require(`body-parser`);//to parse the body of the request
 app.use(bodyParser.urlencoded({extended:false}));
 
-const adminRoutes=require(`./routes/admin`);
+app.use(express.static(path.join(__dirname,`public`)));//to access css file in public folder
+
+const adminRoutes=require(`./routes/admin`);//to use admin.js file
 app.use(`/admin`,adminRoutes);
 
-const shopRoutes=require(`./routes/shop`);
+const shopRoutes=require(`./routes/shop`);//to use shop.js file
 app.use(`/shop`,shopRoutes);
 
+const contactRoutes=require(`./routes/contact`);//to use contact.js file
+app.use(`/contactus`,contactRoutes);
+
+const successRoutes=require(`./routes/success`);//to use success.js file
+app.use(`/success`,successRoutes);
+
 app.use((req,res,next)=>{
-    res.status(404).send(`<h1>Page not found</h1>`);
+    res.status(404).sendFile(path.join(__dirname,`views`,`404.html`));//to send 404 error page
 })
 
 app.listen(3000,()=>{
