@@ -20,9 +20,8 @@ app.use(`/contactus`,contactRoutes);
 const successRoutes=require(`./routes/success`);//to use success.js file
 app.use(`/success`,successRoutes);
 
-app.use((req,res,next)=>{
-    res.status(404).sendFile(path.join(__dirname,`views`,`404.html`));//to send 404 error page
-})
+const errorRoutes = require(`./controllers/error`);//to use error.js file
+app.use(errorRoutes. get404);//to use error.js file
 
 app.listen(3000,()=>{
     console.log(`server is running`);
