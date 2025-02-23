@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details</title>
+</head>
+<body>
+    <h1>User Details Form</h1>
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" required>
+        <br><br>
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required>
+        <br><br>
+        <label for="number">Phone:</label>
+        <input type="tel" name="number" id="number" required>
+        <br><br><br>
+        <button type="submit">Submit</button>
+        <br><br><br>
+        <h2>User List:</h2>
+        <ul id="userList"></ul>
+    </form>
+    <script src="./node_modules/axios/dist/axios.min.js"></script> 
+</body>
+<script src="user.js"></script>
+</html>
