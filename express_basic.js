@@ -1,36 +1,89 @@
 // Deliverables:
 
-// 1.Set Up the Server
+// Build an Express server with:
 
-// Use Express.js to create a server.
+// Set Up an Express Server that listens on a specified port.
+// Use Express Router to modularize your routes.
+// Create basic endpoints for students and courses.
+// Handle dynamic requests using req.params.id.
+// Implement a custom 404 Not Found handler for invalid routes.
 
-// 2.Create the Routes (API Endpoints) You need to create these routes:(Make sure you are using router for this)
+// Features & API Endpoints
 
-// GET /books: Print a message and send a response like "Here is the list of books!".
-// POST /books: Print the book data sent in the request and send a message like "Book has been added!".
+// Home Route:
+// / - Welcome message.
+// Student Routes:
+// /students - List all students.
+// /students/:id - Fetch a student by ID.
+// Course Routes:
+// /courses - List all courses.
+// /courses/:id - Fetch a course by ID.
+// 404 Handling:
+// Handle invalid routes with a "Page not found" message.
 
-// 3.Test Your API
+// Note:
 
-// Use Postman or any API testing tool to test your endpoints.
-// Ensure that GET requests return the correct message and POST requests log the received data.
+// Make use of req.params.id for working with /:id
+// The code has been provided with default values for students and courses which will be used for fetching the values.
+
+// Use the following data: (Right now we are using demo data but in real time we'll be using the data that is fetched from the server)
+
+// Students Data
+// const students = [
+// { id: 1, name: "Alice" },
+// { id: 2, name: "Bob" },
+// { id: 3, name: "Charlie" }
+// ];
+
+// Courses Data
+// const courses = [
+// { id: 1, name: "Frontend", description: "HTML, CSS, JS, React" },
+// { id: 2, name: "Backend", description: "Node.js, Express, MongoDB" }
+// ];
+
+// Example :
+
+// Endpoints to Test
+// Home Route:
+// GET /
+// Response: "Welcome to the Student & Course Portal API!"
+// Student Routes:
+// GET /students
+// Response: "Students: Alice, Bob, Charlie"
+// GET /students/1
+// Response: "Student: Alice"
+// GET /students/99
+// Response: "Student not found"
+// Course Routes:
+// GET /courses
+// Response: "Courses: Frontend, Backend"
+// GET /courses/1
+// Response: "Course: Frontend, Description: HTML, CSS, JS, React"
+// GET /courses/99
+// Response: "Course not found"
+
+// Invalid Route:
+// Example: GET /invalid
+// Response: "Page not found"
 
 const express = require('express');
 const app = express();
 
 app.use(express.json()); // Middleware to parse JSON request bodies
 
-const booksRouter = require('./routes/books');
+const studentRouter = require('./routes/student');
+const courseRouter = require('./routes/course');
 
-// Middleware to log the request URL and method 
-app.use((req, res, next) => {
-    console.log(`${req.method} request made to ${req.url}`);
-    next(); // Pass control to the next middleware or route handler
+app.get('/', (req, res, next) => {
+    res.status(200).send("Welcome to the Student & Course Portal API!");
 });
 
-app.use('/books', booksRouter);
+app.use('/students', studentRouter);
+app.use('/courses', courseRouter);
+
 
 app.use('*', (req, res) => {
-    res.status(404).send(`<h1>404 - Page Not Found</h1>`);
+    res.status(404).send(`Page Not Found`);
 });
 
 app.listen(3000, () => {
