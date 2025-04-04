@@ -1,19 +1,18 @@
-// Build Your Express Server and it's different routes !
-
 // Deliverables:
 
-// Create a server using Express that listens on port 3000 and handles the following endpoints with appropriate responses:
+// Build an Express server that listens on port 4000 and handles the following endpoints:
 
-// GET /orders - Respond with "Here is the list of all orders."
-// POST /orders - Respond with "A new order has been created."
-// GET /users - Respond with "Here is the list of all users."
-// POST /users - Respond with "A new user has been added."
+// GET /products - Respond with "Here is the list of all products."
+// POST /products - Respond with "A new product has been added."
+// GET /categories - Respond with "Here is the list of all categories."
+// POST /categories - Respond with "A new category has been created."
 
-
-// Requirements:
-// Test each endpoint to confirm it works as expected when accessed via a browser (for GET) or a tool like Postman (for POST).
-// Use console.log to indicate when the server is successfully running (e.g., "Server is running on http://localhost:3000").
-
+// Additional Requirements:
+// Wildcard Route:
+// Use a wildcard route (*) to handle all undefined routes and return the following custom error page as HTML:<h1>404 - Page Not Found</h1>
+// Also add the status as 404.
+// Test all valid routes (GET and POST).
+// Access an undefined route, like /random, and verify that the custom error page is displayed.
 
 // Test your routes using Postman or the browser to ensure everything works correctly.
 
@@ -22,22 +21,26 @@ const app = express();
 
 app.use(express.json()); // Middleware to parse JSON request bodies
 
-app.get('/orders', (req, res) => {
-    res.status(200).send(`<h1>Here is the list of all orders.</h1>`); 
+app.get('/products', (req, res) => {
+    res.status(200).send(`<h1>Here is the list of all products.</h1>`); 
 });
 
-app.post('/orders', (req, res) => {
-    res.status(201).send(`<h1>A new order has been created.</h1>`); 
+app.post('/products', (req, res) => {
+    res.status(201).json("A new product has been added."); 
 });
 
-app.get('/users', (req, res) => {
-    res.status(200).send(`<h1>Here is the list of all users.</h1>`);
+app.get('/categories', (req, res) => {
+    res.status(200).send(`<h1>Here is the list of all categories.</h1>`);
 });
 
-app.post('/users', (req, res) => {
-    res.status(201).send(`<h1>A new user has been added.</h1>`); 
+app.post('/categories', (req, res) => {
+    res.status(201).json("A new category has been created."); 
 });
 
-app.listen(3000, () => {
+app.use('*',(req,res)=>{
+    res.status(404).send(`<h1>404 - Page Not Found Yaar</h1>`)
+})
+
+app.listen(4000, () => {
     console.log( "Server is running on http://localhost:3000");
 });
