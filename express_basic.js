@@ -1,85 +1,62 @@
 // Deliverables:
 
-// Build an Express server with:
+// In this task, you will set up and organize your Express application by implementing routes for users, products, and cart management.
+// This will help you understand how to structure APIs, use req.params, and organize route files efficiently.
 
-// Set Up an Express Server that listens on a specified port.
-// Use Express Router to modularize your routes.
-// Create basic endpoints for students and courses.
-// Handle dynamic requests using req.params.id.
-// Implement a custom 404 Not Found handler for invalid routes.
+// 1. User Routes
+// GET /users: Fetch all users.
+// POST /users: Add a new user.
+// GET /users/:id: Fetch a user by their ID.
 
-// Features & API Endpoints
+// 2. Product Routes
+// GET /products: Fetch all products.
+// POST /products: Add a new product.
+// GET /products/:id: Fetch a product by its ID.
 
-// Home Route:
-// / - Welcome message.
-// Student Routes:
-// /students - List all students.
-// /students/:id - Fetch a student by ID.
-// Course Routes:
-// /courses - List all courses.
-// /courses/:id - Fetch a course by ID.
-// 404 Handling:
-// Handle invalid routes with a "Page not found" message.
+// 3. Cart Routes
+// GET /cart/:userId: Fetch the cart items for a specific user.
+// POST /cart/:userId: Add a product to the user's cart.
 
-// Note:
+// Task
+// 1. Create route files for users, products, and cart (userRoutes.js, productRoutes.js, cartRoutes.js).
+// 2. For each route, implement placeholder functionality, such as res.send() responses. For example:
+// res.send("Fetching all products")
+// 3. Organize your project structure by separating route files into a routes folder.
 
-// Make use of req.params.id for working with /:id
-// The code has been provided with default values for students and courses which will be used for fetching the values.
+// Expected Output Example
 
-// Use the following data: (Right now we are using demo data but in real time we'll be using the data that is fetched from the server)
+// For /users routes:
+// GET /users returns: "Fetching all users".
+// POST /users returns: "Adding a new user".
+// GET /users/:id returns: "Fetching user with ID: id".
 
-// Students Data
-// const students = [
-// { id: 1, name: "Alice" },
-// { id: 2, name: "Bob" },
-// { id: 3, name: "Charlie" }
-// ];
+// For /products routes:
+// GET /products returns: "Fetching all products".
+// POST /products returns: "Adding a new product".
+// GET /products/:id returns: "Fetching product with ID: id".
 
-// Courses Data
-// const courses = [
-// { id: 1, name: "Frontend", description: "HTML, CSS, JS, React" },
-// { id: 2, name: "Backend", description: "Node.js, Express, MongoDB" }
-// ];
+// For /cart routes:
+// GET /cart/:userId returns: "Fetching cart for user with ID: userId".
+// POST /cart/:userId returns: "Adding product to cart for user with ID: userId".
 
-// Example :
-
-// Endpoints to Test
-// Home Route:
-// GET /
-// Response: "Welcome to the Student & Course Portal API!"
-// Student Routes:
-// GET /students
-// Response: "Students: Alice, Bob, Charlie"
-// GET /students/1
-// Response: "Student: Alice"
-// GET /students/99
-// Response: "Student not found"
-// Course Routes:
-// GET /courses
-// Response: "Courses: Frontend, Backend"
-// GET /courses/1
-// Response: "Course: Frontend, Description: HTML, CSS, JS, React"
-// GET /courses/99
-// Response: "Course not found"
-
-// Invalid Route:
-// Example: GET /invalid
-// Response: "Page not found"
+// Hints
+// Use Express for creating routes.
+// Ensure each route handles the correct HTTP method and endpoint.
+// Use route parameters by using req.params.id or req.params.userId(e.g., :id or :userId) appropriately.
+// Export the routes and integrate them into the main server.js file.
 
 const express = require('express');
 const app = express();
 
 app.use(express.json()); // Middleware to parse JSON request bodies
 
-const studentRouter = require('./routes/student');
-const courseRouter = require('./routes/course');
+const userRoute = require('./routes/userRoutes');
+const productRoute = require('./routes/productRoutes');
+const cartRoute = require('./routes/cartRoutes')
 
-app.get('/', (req, res, next) => {
-    res.status(200).send("Welcome to the Student & Course Portal API!");
-});
-
-app.use('/students', studentRouter);
-app.use('/courses', courseRouter);
+app.use('/users', userRoute);
+app.use('/products', productRoute);
+app.use('/cart', cartRoute);
 
 
 app.use('*', (req, res) => {
