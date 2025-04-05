@@ -1,18 +1,18 @@
-const getProducts = (req, res) => {
+const getAllProducts = (req, res) => {
     res.status(200).send("Fetching all products");
 };
 
-const postProducts = (req, res) => {
+const addProduct = (req, res) => {
     res.status(201).send("Adding a new product");
 };
 
-const getProductsById = (req, res) => {
+const getProductById = (req, res) => {
     const productId = req.params.id;
     res.status(200).send(`Fetching product with ID: ${productId}`);
 };
 
 module.exports = {
-    getProducts,
-    postProducts,
-    getProductsById
+    getAllProducts,
+    addProduct,
+    getProductById
 };
