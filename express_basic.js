@@ -1,32 +1,35 @@
-// Deliverables:
-
-// Follow the instructor and complete the following requirements.
-
-// Create a server using express.
-// Serve a form using a GET request.
-// Use Axios to send a POST request from the form, allowing users to add products to the server.
-// Return the user-added product as a response and console.log the data on the server.
-// Test your application using Postman to ensure everything works as expected.
-
 const express = require('express');
+const mysql = require('mysql2');
 const app = express();
 
-app.use(express.json()); // Middleware to parse JSON request bodies
+const connection = mysql.createConnection({ // setting up the connection credentials
+    host: 'localhost',
+    user: 'root',
+    password: 'Tomal@1997',
+    database: 'testdb'
+});
 
-// Serve static files from the public directory
-app.use(express.static('public'));
+connection.connect((err) => { // connecting with mysql server
+    if(err){
+        console.log(err);
+        return;
+    }
+    console.log('connection has been created');
 
-const userRoute = require('./routes/userRoutes');
-const productRoute = require('./routes/productRoutes');
-const cartRoute = require('./routes/cartRoutes');
+    const creationQuery = `create table Students(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(20),
+        emanil VARCHAR(20)
+    )`
 
-// Register routes
-app.use('/users', userRoute);
-app.use('/products', productRoute);
-app.use('/cart', cartRoute);
-
-app.use('*', (req, res) => {
-    res.status(404).send(`Page Not Found`);
+    connection.execute(creationQuery, (err) => {//executing the connection
+        if(err){
+            console.log(err);
+            connection.end();
+            return;
+        }
+        console.log('Table is created');
+    });
 });
 
 app.listen(3000, () => {
