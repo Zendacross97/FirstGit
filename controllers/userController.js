@@ -1,18 +1,34 @@
+const db = require('../util/db-connection');
+
 const getAllUsers = (req, res) => {
-    res.status(200).send("Fetching all users");
+    const getAllQuery = 'SELECT * FROM users';
+
+    db.execute(getAllQuery, (err, results) => { // Use 'results' to get query data
+        if (err) {
+            console.log(err.message);
+            res.status(500).send(err.message);
+            db.end();
+            return;
+        }
+        res.status(200).json(results); // Send the query results as JSON
+    });
 };
 
 const addUser = (req, res) => {
-    res.status(201).send("Adding a new user");
-};
+    const { email, name } = req.body;
+    const addQuery = 'INSERT INTO users (name, email) VALUES ( ?, ?)'
 
-const getUserById = (req, res) => {
-    const userId = req.params.id;
-    res.status(200).send(`Fetching user with ID: ${userId}`);
+    db.execute(addQuery, [name, email], (err) => {
+        if(err){
+            console.log(err.message);
+            res.status(500).send(err.message);
+            return;
+        }
+        res.status(200).send('User successfully added')
+    })
 };
 
 module.exports = {
     getAllUsers,
     addUser,
-    getUserById
 };

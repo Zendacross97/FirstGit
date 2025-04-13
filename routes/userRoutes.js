@@ -1,11 +1,11 @@
 const express = require('express');
-const router = express.Router();
 const userController = require('../controllers/userController');
+const busController = require('../controllers/busController')
+const router = express.Router();
 
-router.get('/', userController.getAllUsers);
-
-router.post('/', userController.addUser);
-
-router.get('/:id', userController.getUserById);
+router.get('/users', userController.getAllUsers);
+router.post('/users', userController.addUser);
+router.get('/buses', busController.getAllBuses);
+router.post('/buses', busController.addBus);
 
 module.exports = router;
