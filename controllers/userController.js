@@ -1,31 +1,29 @@
-const db = require('../util/db-connection');
+const Users = require('../models/user');
 
-const getAllUsers = (req, res) => {
-    const getAllQuery = 'SELECT * FROM users';
-
-    db.execute(getAllQuery, (err, results) => { // Use 'results' to get query data
-        if (err) {
-            console.log(err.message);
-            res.status(500).send(err.message);
-            db.end();
-            return;
+const getAllUsers = async (req, res) => {
+    try{
+        const users = await Users.findAll();
+        if (!users || users.length===0) {
+            res.status(404).send('No User available');
         }
-        res.status(200).json(results); // Send the query results as JSON
-    });
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).send('User info cannot be found');
+    }
 };
 
-const addUser = (req, res) => {
-    const { email, name } = req.body;
-    const addQuery = 'INSERT INTO users (name, email) VALUES ( ?, ?)'
-
-    db.execute(addQuery, [name, email], (err) => {
-        if(err){
-            console.log(err.message);
-            res.status(500).send(err.message);
-            return;
-        }
-        res.status(200).send('User successfully added')
-    })
+const addUser = async (req, res) => {
+    
+    try {
+        const { email, name } = req.body;
+        const User = await Users.create({
+            email: email,
+            name: name,
+        });
+        res.status(201).send('User info added');
+    } catch (error) {
+        res.status(500).send('User info cannot be added');
+    }
 };
 
 module.exports = {
