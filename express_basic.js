@@ -1,35 +1,57 @@
-// Deliverables
+// Create an Express API that interacts with a MySQL database using the mysql2 package.
+// The API should allow users to insert, update, retrieve, and delete student records using raw SQL queries.
 
-// 1.Insert Sample Data
+// Deliverables:
 
-// Add and retrieve add into the database.
+// 1. Setup & Database Creation
+
+// Initialize an Express project and configure MySQL.
+// Create a students table with the following columns:
+// id (Primary Key, Auto Increment)
+// name (VARCHAR)
+// email (VARCHAR, Unique)
+// age (INT)
 
 // 2. Implement API Endpoints
 
-// User Endpoints:
-// POST /users → Add a new user.
-// GET /users → Retrieve all users from the database.
+// POST /students → Insert a new student.
+// GET /students → Retrieve all students.
+// GET /students/:id → Retrieve a student by ID.
+// PUT /students/:id → Update student details.
+// DELETE /students/:id → Delete a student by ID.
 
-// Bus Endpoints:
-// POST /buses → Add a new bus.
-// GET /buses/available/:seats → Retrieve all buses with more than the specified number of available seats.
+// 3. Perform the following operations:
 
-// Check this in postman after done with creating the endpoints:
+// Insertion: Add two students to the database:
+// Name: "MS Dhoni"
+// Email: "dhoni@example.com"
+// Age: 42
+// Name: "Virat Kohli"
+// Email: "virat.kohli@example.com"
+// Age: 35
 
-// Fetching Users:
-// Write an SQL query to retrieve all users from the database.
+// Updating: Modify the first entry (MS Dhoni) as follows:
+// Name: "Captain Cool"
+// Email: "captaincool@example.com"
 
-// Filtering Buses by Seat Availability:
-// Write an SQL query to retrieve all buses where available seats are greater than 10.
+// Deletion:
+// Delete the second student (Virat Kohli) from the database.
+// Verify the deletion by fetching all students.
+
+// Additional Requirements:
+
+// Ensure proper error handling (e.g., trying to update/delete a non-existent student).
+// Log all database operations (Insert, Update, Delete) in the console for debugging.
+// Manage database connections efficiently to prevent memory leaks.
 
 const express = require('express');
 db = require('./util/db-connection');
-const userRoutes = require('./routes/userRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 const app = express();
 
 app.use(express.json());
 
-app.use('/', userRoutes);
+app.use('/students', studentRoutes);
 
 app.listen(3000, () => {
     console.log("Server is running on http://localhost:3000");
