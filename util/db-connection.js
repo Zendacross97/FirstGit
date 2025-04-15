@@ -7,12 +7,12 @@ const sequelize = new Sequelize('testdb','root','Mysql@1997', {
 
 (async () => {
     try{
-        await sequelize.authenticate();//authenticating the sequelize connection
+        await sequelize.authenticate();
         console.log('Connection to the Database has been created');
     }
     catch (error) {
         console.log(error);
     }
-})(); //IIFE Functions: immediately invoked function expression
+})();
 
 module.exports = sequelize;
