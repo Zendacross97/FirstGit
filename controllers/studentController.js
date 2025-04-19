@@ -1,5 +1,6 @@
-const db = require(`../util/db-connection`);
 const Student = require('../models/students');
+const IdentityCard  = require('../models/identityCard');
+const Department = require('../models/department');
 
 const addEntries = async (req, res) => {
     try{
@@ -14,8 +15,34 @@ const addEntries = async (req, res) => {
     }
 };
 
-const getEntries = async (req, res) => {
+const addingValuesToStudentsAndIdentityTable = async (req, res) => {
     try{
+        const student = await Student.create(req.body.student);
+        const idCard = await IdentityCard.create({
+            ...req.body.IdentityCard,
+            StudentId: student.id
+        });
+        res.status(201).json({ student, idCard });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+const addingValuesToStudentsAndDepartmentTable = async (req, res) => {
+    try{
+        const department = await Department.create(req.body.Department);
+        const student = await Student.create({
+            ...req.body.student,
+            departmentId: department.id
+        });
+        res.status(201).json({ student, department });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+const getEntries = async (req, res) => {
+    try {
         const students = await Student.findAll();
         if (!students || students.length === 0) {
             return res.status(404).send('No student info is available');
@@ -73,6 +100,8 @@ const deleteEntry = async (req, res) => {
 
 module.exports = {
     addEntries,
+    addingValuesToStudentsAndIdentityTable,
+    addingValuesToStudentsAndDepartmentTable,
     getEntries,
     getEntriesById,
     updateEntry,
