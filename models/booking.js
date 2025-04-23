@@ -13,5 +13,5 @@ const Bookings = sequelize.define('Bookings', {
         allowNull: false
     }
 });
-
+ 
 module.exports = Bookings

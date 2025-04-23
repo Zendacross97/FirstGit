@@ -25,7 +25,7 @@ const addBus = async (req, res) => {
         });
         res.status(201).send('Bus info added');
     } catch (error) {
-        res.status(500).send('Bus info cannot be added');
+        res.status(500).json({error: error.message});
     }
 };
 
