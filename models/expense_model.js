@@ -1,28 +1,25 @@
-const Sequelize = require("sequelize");
+const {Sequelize, DataTypes} = require("sequelize");
+const sequelize = require("../util/db-connection");
 
-const sequelize = require("../util/database");
-
-const Details = sequelize.define("expense", {
+const expense = sequelize.define("expense", {
   id: {
-    type: Sequelize.INTEGER,
+    type: DataTypes.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true
   },
   amount: {
-    type: Sequelize.INTEGER,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   description: {
-    type: Sequelize.STRING,
+    type: DataTypes.STRING,
     allowNull: false,
   },
   category: {
-    type: Sequelize.STRING,
+    type: DataTypes.STRING,
     allowNull: false,
   }
-}, {
-  timestamps: false // Disable the automatic addition of createdAt and updatedAt fields
 });
 
-module.exports = Details;
+module.exports = expense;

@@ -1,53 +1,45 @@
-const details = require('../models/expense_model');
+const Expense = require('../models/expense_model');
 
 exports.addExpense = async (req, res) => {
     try {
-        if (!req.body.amount || !req.body.description || !req.body.category) {
+        const { amount, description, category } = req.body;
+        if (!amount || !description || !category) {
             throw new Error(`Please fill the required field`);
         }
-
-        const amount = req.body.amount;
-        const description = req.body.description;
-        const category = req.body.category;
-
-        const data = await details.create({
+        const expense = await Expense.create({
             amount: amount,
             description: description,
             category: category
         });
-
-        res.status(201).json({ newExpenseDetails: data });
-
+        res.status(201).json(expense);
     } catch (err) {
-        console.log('Add expense is failing', JSON.stringify(err));
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: err.message });
     }
 };
 
 exports.getExpense = async (req, res) => {
     try {
-        const data = await details.findAll();
-        res.status(200).json({ newExpenseDetails: data });
+        const expense = await Expense.findAll();
+        if (!expense || expense.length === 0) {
+            return res.status(404).json({ message: 'Expense details not found' });
+        }
+        res.status(200).json(expense);
     } catch (err) {
-        console.log('Get expense is failing', JSON.stringify(err));
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: err.message });
     }
 };
 
 exports.deleteExpense = async (req, res) => {
+    const { id } = req.params;
     try {
-        if (req.params.id == 'undefined') {
+        if (id == 'undefined') {
             return res.status(400).json({ error: 'Id is missing' });
         }
-
-        const uId = req.params.id;
-        await details.destroy({
-            where: { id: uId }
+        await Expense.destroy({
+            where: { id: id }
         });
         res.status(200).json({ message: 'Expense deleted' });
-
     } catch (err) {
-        console.log('Delete user is failing', JSON.stringify(err));
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: err.message });
     }
 };

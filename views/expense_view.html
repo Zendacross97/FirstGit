@@ -10,10 +10,8 @@
     <form id="expense_tracker" onsubmit="add(event)">
         <label for="amount">Amount:</label>
         <input type="number" id="amount" name="amount">
-        <br><br>
         <label for="description">Description:</label>
         <input type="text" id="description" name="description">
-        <br><br>
         <label for="category">Category:</label>
         <select name="category" id="category">
             <option>Fuel</option>
@@ -21,14 +19,11 @@
             <option>Electricity</option>
             <option>Movie</option>
         </select>
-        <br><br>
         <button type="submit">Add Expense</button>
-        <br><br>
-        <h2>Expenses:</h2>
-        <br><br>
-        <ul></ul>
     </form>
-    <script src="../node_modules/axios/dist/axios.min.js"></script>
+    <h2>Expenses:</h2>
+    <ul></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.8.4/axios.min.js"></script>
+    <script src="../public/js/expense_public.js"></script>
 </body>
-<script src="../expense_public.js"></script>
 </html>
