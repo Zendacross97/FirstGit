@@ -1,15 +1,14 @@
 const express = require('express');
 const db = require('./util/db-connection');
 const cors = require('cors');
-const expenseRoute = require('./routes/expense_route');
-const expenseModel = require('./models/expense_model');
+const userRoute = require('./routes/userRoutes');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
-app.use('/expense', expenseRoute);
+app.use('/user', userRoute);
 
 db.sync()
 .then(() => {
