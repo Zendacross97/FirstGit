@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./util/db-connection');
 const cors = require('cors');
 const userRoute = require('./routes/userRoutes');
+const userModel = require('./models/userModel');
 
 const app = express();
 
