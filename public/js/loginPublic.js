@@ -6,10 +6,13 @@ function signUp(event) {
     const signUpDetails = { name, email, password };
     axios.post('http://localhost:3000/user/signup', signUpDetails)
     .then((res) => {
-        console.log(res.data);
+        const p = document.querySelector('.signup-message');
+        p.innerHTML = res.data.message;
     })
     .catch((err) => {
-        console.log(err);
+        const p = document.querySelector('.signup-message');
+        p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occurred';
+        console.log(err.message);
     });
     event.target.name.value = '';
     event.target.email.value = '';
