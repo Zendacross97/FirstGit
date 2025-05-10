@@ -21,12 +21,12 @@ const logInUser = async (req, res) => {
         }
         const userDetails = await User.findAll( { where: { email: email } } );
          if (userDetails.length === 0) {
-            return res.status(400).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found' });
          }
          if (userDetails[0].password != password) {
-            return res.status(400).json({ error: 'Password is incorrect' }); 
+            return res.status(401).json({ error: 'User not authorized' }); 
          }
-        res.status(200).json({message: 'Login successful'});
+        res.status(200).json({message: 'User login sucessful'});
     } catch (error) {
         res.status(500).json({error: error.message});
     }
