@@ -4,9 +4,15 @@ function add(event){
     const description = event.target.description.value;
     const category = event.target.category.value;
     let expenseDetails = { amount, description, category };
-    axios.post('http://localhost:3000/expense/add', expenseDetails)
+    axios.post('http://localhost:3000/expense/addExpense', expenseDetails)
     .then((res) => {
-        showExpense(res.data)
+        const p = document.querySelector('.expense_message');
+        p.innerHTML = res.data.message;
+        showExpense(res.data.expense)
+    })
+    .catch((err) => {
+        const p = document.querySelector('.expense_message');
+        p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
     })
     event.target.amount.value = '';
     event.target.description.value = '';
@@ -14,18 +20,22 @@ function add(event){
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    axios.get('http://localhost:3000/expense/get')
+    axios.get('http://localhost:3000/expense/getExpense')
     .then((res) => {
         for (let i = 0; i < res.data.length; i++) {
             showExpense(res.data[i]);
         }
+    })
+    .catch((err) => {
+        const p = document.querySelector('.expense_message');
+        p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
     })
 });
 
 function showExpense(data){
     let ul=document.querySelector(`ul`);
     let li=document.createElement(`li`);
-    li.innerHTML = `${data.amount} - ${data.description} - ${data.category} <button class="delete">Delete</button> <button class="edit">Edit</button>`;
+    li.innerHTML = `${data.amount} - ${data.description} - ${data.category} <button class="delete">Delete Expense</button>`;
     ul.appendChild(li);
     const Delete = li.querySelector('.delete');
     Delete.onclick = () => {
@@ -35,11 +45,13 @@ function showExpense(data){
 }
 
 function deleteExpense(userId){
-    axios.delete(`http://localhost:3000/expense/delete/${userId}`)
+    axios.delete(`http://localhost:3000/expense/deleteExpense/${userId}`)
     .then(res => {
-        console.log(res);
+        const p = document.querySelector('.expense_message');
+        p.innerHTML = res.data.message;
     })
     .catch(err => {
-        console.log(err);
+        const p = document.querySelector('.expense_message');
+        p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
     });
 }

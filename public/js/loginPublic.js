@@ -26,8 +26,10 @@ function logIn(event) {
     const loginDetails = { email, password };
     axios.post('http://localhost:3000/user/login', loginDetails)
     .then((res) => {
-        const p = document.querySelector('.login-message');
-        p.innerHTML = res.data.message;
+        if (res.data.message) {
+            alert(res.data.message);
+            window.location.href = '../views/expense_view.html';
+        }
     })
     .catch((err) => {
         const p = document.querySelector('.login-message');
