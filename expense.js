@@ -14,7 +14,10 @@ app.use(express.static('public'));
 app.use('/user', userRoute);
 app.use('/expense', expenseRoute);
 
-db.sync()
+userModel.hasMany(expenseModel);
+expenseModel.belongsTo(userModel);
+
+db.sync({force: false})
 .then(() => {
     app.listen(3000, () => {
         console.log("Server is running on http://localhost:3000");
