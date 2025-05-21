@@ -80,7 +80,7 @@ exports.getLeaderboard = async (req, res) => {
                 attributes: []
             }],
             group: ['users.id'],
-            order: [[sequelize.fn('sum', sequelize.col('expenses.amount')), 'DESC']]
+            order: [['Total_Expense', 'DESC']]
         });
         res.status(200).json(leaderboard);
     } catch (err) {
