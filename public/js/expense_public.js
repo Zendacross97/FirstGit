@@ -88,7 +88,7 @@ function showLeaderboard(data){
     ul.className = 'leaderboard';
     for (let i = 0; i < data.length; i++) {
         const li = document.createElement('li');
-        li.innerHTML = `Name: ${data[i].Name} - Total Expense: ${data[i].Total_Expense}`;
+        li.innerHTML = `Name: ${data[i].name} - Total Expense: ${data[i].totalExpense}`;
         ul.appendChild(li);
     }
     document.body.appendChild(h);

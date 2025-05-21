@@ -28,6 +28,15 @@ exports.addExpense = async (req, res) => {
             ...req.body,
             UserId: req.user.id
         });
+        const oldTotalExpense = await User.findAll({
+            where: { id: req.user.id },
+            attributes: ['totalExpense']
+        })
+        await User.update(
+            { totalExpense: +oldTotalExpense[0].totalExpense + +amount },//using + operator to convert string to number
+            { where: { id: req.user.id } }
+        );
+        console.log('newTotalExpense', +oldTotalExpense[0].totalExpense + +amount);
         res.status(201).json( { message: 'Expense details added successfully', expense });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -54,6 +63,10 @@ exports.deleteExpense = async (req, res) => {
         if (expenseId == 'undefined') {
             return res.status(400).json({ error: 'Id is missing' });
         }
+        const deletedExpense = await Expense.findAll({
+            where: { id: expenseId, UserId: req.user.id },
+            attributes: ['amount']
+        });
         const noOfRows = await Expense.destroy({
             where: { id: expenseId, UserId: req.user.id }
         });
@@ -61,6 +74,15 @@ exports.deleteExpense = async (req, res) => {
             return res.status(404).json({ error: 'Expense does not belong to this user' });        
         }
         else {
+            const oldTotalExpense = await User.findAll({
+                where: { id: req.user.id },
+                attributes: ['totalExpense']
+            });
+            await User.update(
+                { totalExpense: +oldTotalExpense[0].totalExpense - +deletedExpense[0].amount },
+                { where: { id: req.user.id } }
+            );
+            console.log('newTotalExpense', +oldTotalExpense[0].totalExpense - +deletedExpense[0].amount);
             res.status(200).json({ message: 'Expense details deleted successfully' });
         }
     } catch (err) {
@@ -71,17 +93,9 @@ exports.deleteExpense = async (req, res) => {
 exports.getLeaderboard = async (req, res) => {
     try {
         const leaderboard = await User.findAll({
-            attributes: [
-                ['name', 'Name'],
-                [sequelize.fn('sum', sequelize.col('expenses.amount')), 'Total_Expense']
-            ],
-            include: [{
-                model: Expense,
-                attributes: []
-            }],
-            group: ['users.id'],
-            order: [['Total_Expense', 'DESC']]
-        });
+            attributes: ['name', 'totalExpense'],
+            order: [['totalExpense', 'DESC']]
+        })
         res.status(200).json(leaderboard);
     } catch (err) {
         res.status(500).json({ error: err.message });
