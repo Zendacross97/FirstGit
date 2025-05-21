@@ -1,8 +1,12 @@
 const express = require('express');
 const db = require('./util/db-connection');
 const cors = require('cors');
+require('dotenv').config();
 const userRoute = require('./routes/userRoutes');
 const expenseRoute = require('./routes/expense_route');
+const paymentRoute = require('./routes/paymentRoute');
+const indexModel = require('./models/expenseIndex');
+const orderModel = require('./models/orderModel');
 const userModel = require('./models/userModel');
 const expenseModel = require('./models/expense_model');
 
@@ -13,9 +17,7 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use('/user', userRoute);
 app.use('/expense', expenseRoute);
-
-userModel.hasMany(expenseModel);
-expenseModel.belongsTo(userModel);
+app.use('/payment', paymentRoute);
 
 db.sync({force: false})
 .then(() => {

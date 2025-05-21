@@ -6,12 +6,13 @@ function signUp(event) {
     const signUpDetails = { name, email, password };
     axios.post('http://localhost:3000/user/signup', signUpDetails)
     .then((res) => {
-        const p = document.querySelector('.signup-message');
-        p.innerHTML = res.data.message;
+        alert(res.data.message);
+        window.location.href = '../views/login.html';
     })
     .catch((err) => {
         const p = document.querySelector('.signup-message');
         p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occurred';
+        p.style.color = 'red';
         console.log(err.message);
     });
     event.target.name.value = '';
@@ -26,15 +27,14 @@ function logIn(event) {
     const loginDetails = { email, password };
     axios.post('http://localhost:3000/user/login', loginDetails)
     .then((res) => {
-        if (res.data.message) {
-            alert(res.data.message);
-            localStorage.setItem('token', res.data.token);
-            window.location.href = '../views/expense_view.html';
-        }
+        alert(res.data.message);
+        localStorage.setItem('token', res.data.token);
+        window.location.href = '../views/expense_view.html';
     })
     .catch((err) => {
         const p = document.querySelector('.login-message');
         p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occurred';
+        p.style.color = 'red';
         console.log(err.message);
     });
     event.target.email.value = '';

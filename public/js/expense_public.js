@@ -22,6 +22,24 @@ function add(event){
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    axios.get('http://localhost:3000/expense/payment_status', { headers: { 'Authorization': token } })
+    .then((res) => {
+        const header = document.querySelector('.header');
+        const h = header.querySelector('#premium');
+        if (res.data.orderStatus === 'SUCCESS') {
+            h.innerHTML = 'You are a premium user <button id="premiumBtn">Show leaderboard</button>';
+            const premiumBtn = header.querySelector('#premiumBtn');
+            premiumBtn.onclick = () => {
+                axios.get('http://localhost:3000/expense/leaderboard', { headers: { 'Authorization': token } })
+                .then((res) => {
+                    showLeaderboard(res.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+            }
+        }
+    })
     axios.get('http://localhost:3000/expense/getExpense', { headers: { 'Authorization': token } })
     .then((res) => {
         for (let i = 0; i < res.data.length; i++) {
@@ -60,4 +78,19 @@ function deleteExpense(expenseId){
         const p = document.querySelector('.expense_message');
         p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
     });
+}
+
+function showLeaderboard(data){
+    const h = document.createElement('h2');
+    h.id = 'leaderboard';
+    h.innerHTML = 'Leaderboard:';
+    const ul = document.createElement('ul');
+    ul.className = 'leaderboard';
+    for (let i = 0; i < data.length; i++) {
+        const li = document.createElement('li');
+        li.innerHTML = `Name: ${data[i].Name} - Total Expense: ${data[i].Total_Expense}`;
+        ul.appendChild(li);
+    }
+    document.body.appendChild(h);
+    document.body.appendChild(ul);
 }

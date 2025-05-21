@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker</title>
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
 <body>
-    <label of="expense_tracker">Expense Tracker</label>
+    <header class="header">
+        <h1>Daily Expense Tracker</h1>
+        <h3 id="premium">Buy premium membership <button id="renderBtn">Buy Now</button></h3>
+    </header>
     <form id="expense_tracker" onsubmit="add(event)">
         <label for="amount">Amount:</label>
         <input type="number" id="amount" name="amount"><br>
@@ -18,7 +22,7 @@
             <option>Food</option>
             <option>Electricity</option>
             <option>Movie</option>
-        </select>
+        </select><br><br>
         <button type="submit">Add Expense</button>
     </form>
     <p class="expense_message"></p>
@@ -26,5 +30,6 @@
     <ul></ul>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.8.4/axios.min.js"></script>
     <script src="../public/js/expense_public.js"></script>
+    <script src="../public/js/cashfreeWeb_self.js"></script>
 </body>
 </html>

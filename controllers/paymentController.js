@@ -4,7 +4,7 @@ const cashfreeService = require('../services/cashfreeService');
 exports.createOrder = async (req, res) => {
     try {
         // Create a new order in your DB to get a unique orderId
-        const order = await Order.create();
+        const order = await Order.create({ UserId: req.user.id });
         const orderId = order.id;
 
         // Creating the payment order with Cashfree

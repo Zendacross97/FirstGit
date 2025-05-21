@@ -3,11 +3,12 @@ const cashfree = Cashfree({
 });
 
 document.getElementById("renderBtn").addEventListener("click", () => {
-    axios.post('http://localhost:3000/pay')
+    const token = localStorage.getItem('token'); // Retrieve token from localStorage
+    axios.post('http://localhost:3000/payment/pay', {}, { headers: { 'Authorization': token } })
     .then((res) => {
         let checkoutOptions = {
             paymentSessionId: res.data.paymentSessionId,
-            redirectTarget: "_self" //default
+            redirectTarget: "_self"
         };
         cashfree.checkout(checkoutOptions)
     })

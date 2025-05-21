@@ -1,4 +1,21 @@
 const Expense = require('../models/expense_model');
+const Order = require('../models/orderModel');
+const User = require('../models/userModel');
+const sequelize = require('sequelize');
+
+exports.getPaymentStatus = async (req, res) => {
+    try {
+        const order = await Order.findAll({
+            where: { UserId: req.user.id }
+        });
+        if (order && order.length !== 0) {
+            const orderStatus = order[0].status;
+            res.status(200).json({ orderStatus });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 exports.addExpense = async (req, res) => {
     try {
@@ -46,6 +63,26 @@ exports.deleteExpense = async (req, res) => {
         else {
             res.status(200).json({ message: 'Expense details deleted successfully' });
         }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.getLeaderboard = async (req, res) => {
+    try {
+        const leaderboard = await User.findAll({
+            attributes: [
+                ['name', 'Name'],
+                [sequelize.fn('sum', sequelize.col('expenses.amount')), 'Total_Expense']
+            ],
+            include: [{
+                model: Expense,
+                attributes: []
+            }],
+            group: ['users.id'],
+            order: [[sequelize.fn('sum', sequelize.col('expenses.amount')), 'DESC']]
+        });
+        res.status(200).json(leaderboard);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
