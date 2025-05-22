@@ -81,6 +81,14 @@ function deleteExpense(expenseId){
 }
 
 function showLeaderboard(data){
+    // Remove old leaderboard header if it exists
+    const oldHeader = document.querySelector('#leaderboard');
+    if (oldHeader) document.body.removeChild(oldHeader);
+
+    // Remove old leaderboard list if it exists
+    const oldList = document.querySelector('.leaderboard');
+    if (oldList) document.body.removeChild(oldList);
+
     const h = document.createElement('h2');
     h.id = 'leaderboard';
     h.innerHTML = 'Leaderboard:';

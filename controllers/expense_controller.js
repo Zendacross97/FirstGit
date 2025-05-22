@@ -1,7 +1,7 @@
 const Expense = require('../models/expense_model');
 const Order = require('../models/orderModel');
 const User = require('../models/userModel');
-const sequelize = require('sequelize');
+const sequelize = require('../util/db-connection');
 
 exports.getPaymentStatus = async (req, res) => {
     try {
@@ -18,27 +18,32 @@ exports.getPaymentStatus = async (req, res) => {
 };
 
 exports.addExpense = async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
-        console.log(req.user);
-        const { amount, description, category } = req.body;
-        if (!amount || !description || !category) {
+        console.log('id:', req.user);
+        const { amount, description, category } = req.body; //fetch data from request body
+        if (!amount || !description || !category) { //check if all fields are present
+            await transaction.rollback();
             return res.status(400).json({ error: 'Expense fields are incomplete' });
         }
-        const expense = await Expense.create({
+        const expense = await Expense.create({ //create a new expense
             ...req.body,
             UserId: req.user.id
-        });
-        const oldTotalExpense = await User.findAll({
+        }, { transaction });
+        const oldTotalExpense = await User.findAll({ //fetch the old total expense
             where: { id: req.user.id },
-            attributes: ['totalExpense']
-        })
-        await User.update(
-            { totalExpense: +oldTotalExpense[0].totalExpense + +amount },//using + operator to convert string to number
-            { where: { id: req.user.id } }
+            attributes: ['totalExpense'],
+            transaction
+        });
+        await User.update( //update the total expense
+            { totalExpense: +oldTotalExpense[0].totalExpense + +amount },
+            { where: { id: req.user.id }, transaction }
         );
         console.log('newTotalExpense', +oldTotalExpense[0].totalExpense + +amount);
+        await transaction.commit();
         res.status(201).json( { message: 'Expense details added successfully', expense });
     } catch (err) {
+        await transaction.rollback();
         res.status(500).json({ error: err.message });
     }
 };
@@ -58,34 +63,46 @@ exports.getExpense = async (req, res) => {
 };
 
 exports.deleteExpense = async (req, res) => {
-    const { expenseId } = req.params;
+    const transaction = await sequelize.transaction();
+    const { expenseId } = req.params; 
     try {
         if (expenseId == 'undefined') {
+            await transaction.rollback();
             return res.status(400).json({ error: 'Id is missing' });
         }
         const deletedExpense = await Expense.findAll({
             where: { id: expenseId, UserId: req.user.id },
-            attributes: ['amount']
+            attributes: ['amount'],
+            transaction
         });
+        if (!deletedExpense.length) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'Expense not found' });
+        }
         const noOfRows = await Expense.destroy({
-            where: { id: expenseId, UserId: req.user.id }
+            where: { id: expenseId, UserId: req.user.id },
+            transaction
         });
         if(noOfRows === 0) {
+            await transaction.rollback();
             return res.status(404).json({ error: 'Expense does not belong to this user' });        
         }
         else {
             const oldTotalExpense = await User.findAll({
                 where: { id: req.user.id },
-                attributes: ['totalExpense']
+                attributes: ['totalExpense'],
+                transaction
             });
             await User.update(
                 { totalExpense: +oldTotalExpense[0].totalExpense - +deletedExpense[0].amount },
-                { where: { id: req.user.id } }
+                { where: { id: req.user.id }, transaction }
             );
             console.log('newTotalExpense', +oldTotalExpense[0].totalExpense - +deletedExpense[0].amount);
+            await transaction.commit();
             res.status(200).json({ message: 'Expense details deleted successfully' });
         }
     } catch (err) {
+        await transaction.rollback();
         res.status(500).json({ error: err.message });
     }
 };
