@@ -11,7 +11,7 @@ function signUp(event) {
     })
     .catch((err) => {
         const p = document.querySelector('.signup-message');
-        p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occurred';
+        p.innerHTML = (err.response && err.response.data && err.response.data.error) ? err.response.data.error : 'An error occurred';
         p.style.color = 'red';
         console.log(err.message);
     });
@@ -33,10 +33,26 @@ function logIn(event) {
     })
     .catch((err) => {
         const p = document.querySelector('.login-message');
-        p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occurred';
+        p.innerHTML = (err.response && err.response.data && err.response.data.error) ? err.response.data.error : 'An error occurred';
         p.style.color = 'red';
         console.log(err.message);
     });
     event.target.email.value = '';
     event.target.password.value = '';
+}
+
+function forgotPassword(event) {
+    event.preventDefault();
+    const email = event.target.email.value;
+    const p = document.querySelector('.forgot-message');
+    axios.get(`http://localhost:3000/password/forgotpassword/${ email }`)
+    .then((res) => {
+        p.innerHTML = res.data.message;
+        p.style.color = 'green';
+    })
+    .catch((err) => {
+        p.innerHTML = (err.response && err.response.data && err.response.data.error) ? err.response.data.error : 'An error occurred';
+        p.style.color = 'red';
+        console.log(err.message);
+    })
 }

@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Sib = require('sib-api-v3-sdk');
 
 const signUpUser = async (req, res) => {  
     try {
@@ -56,7 +57,43 @@ const logInUser = async (req, res) => {
     }
 };
 
+const forgotUser = async (req, res) => {
+    try {
+        const { email } = req.params;
+        if(!email) {
+            return res.status(400).json({ error: 'Email credential is incomplete'})
+        }
+        const client = Sib.ApiClient.instance
+        const apiKey = client.authentications['api-key'];
+        apiKey.apiKey = process.env.BREVO_API_KEY;
+        const tranEmailApi = new Sib.TransactionalEmailsApi()
+        const sender = {
+            email: 'sidhchakraborty66@gmail.com',
+            name: 'Siddhartha Chakraborty'
+        }
+        const receiver = [{
+            email: `${ email }`
+        }]
+        tranEmailApi.sendTransacEmail({
+            sender,
+            to: receiver,
+            subject: 'Reset Password',
+            textContent: 'Click on the link to reset your { { params.role } }.',
+            params: {
+                role: 'Password'
+            },
+            htmlContent: `<h1> Daily Expense Tracker <h1>
+                        <h3> Your password rest link <h3>`
+        })
+        res.status(200).json({ message: 'Check your email' });
+
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
 module.exports = {
     signUpUser,
-    logInUser
+    logInUser,
+    forgotUser
 };

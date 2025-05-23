@@ -18,6 +18,7 @@ app.use(express.static('public'));
 app.use('/user', userRoute);
 app.use('/expense', expenseRoute);
 app.use('/payment', paymentRoute);
+app.use('/password', userRoute);
 
 db.sync({force: false})
 .then(() => {
