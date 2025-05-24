@@ -27,7 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const header = document.querySelector('.header');
         const h = header.querySelector('#premium');
         if (res.data.orderStatus === 'SUCCESS') {
-            h.innerHTML = 'You are a premium user <button id="premiumBtn">Show leaderboard</button>';
+            h.innerHTML = 'You are a premium user <button id="premiumBtn">Show leaderboard</button> <button id="reportBtn">Show Report</button><button id="downloadBtn">Download Report</button>';
             const premiumBtn = header.querySelector('#premiumBtn');
             premiumBtn.onclick = () => {
                 axios.get('http://localhost:3000/expense/leaderboard', { headers: { 'Authorization': token } })
@@ -37,6 +37,21 @@ window.addEventListener("DOMContentLoaded", () => {
                 .catch((err) => {
                     console.log(err);
                 })
+            }
+            const reportBtn = header.querySelector('#reportBtn');
+            reportBtn.onclick = () => {
+                window.location.href = `../views/expenseReport.html`;
+            }
+            const downloadBtn = header.querySelector('#downloadBtn');
+            downloadBtn.onclick = () => {
+                axios.get('http://localhost:3000/expense/downloadReport', { headers: { 'Authorization': token } })
+                .then((res) => {
+                    downloadReportBtn(res);
+                })
+                .catch((err) => {
+                    const p = document.querySelector('.report-message');
+                    p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
+                });
             }
         }
     })
@@ -50,6 +65,16 @@ window.addEventListener("DOMContentLoaded", () => {
         const p = document.querySelector('.expense_message');
         p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
     })
+    if (window.location.pathname.endsWith("expenseReport.html")) {
+        axios.get('http://localhost:3000/expense/report', { headers: { 'Authorization': token } })
+        .then((res) => {
+            populateExpenseReport(res.data);
+        })
+        .catch((err) => {
+            const p = document.querySelector('.report-message');
+            p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
+        });
+    }
 });
 
 function showExpense(data){
@@ -101,4 +126,75 @@ function showLeaderboard(data){
     }
     document.body.appendChild(h);
     document.body.appendChild(ul);
+}
+
+function populateExpenseReport(data) {
+    // Example: Fill daily report table
+    const dailyBody = document.getElementById('dailyReportBody');
+    dailyBody.innerHTML = '';
+    if (data.daily && Array.isArray(data.daily)) {
+        data.daily.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.date || ''}</td>
+                <td>${row.description || ''}</td>
+                <td>${row.category || ''}</td>
+                <td>${row.income || ''}</td>
+                <td>${row.expense || ''}</td>
+            `;
+            dailyBody.appendChild(tr);
+        });
+    }
+     const weeklyBody = document.getElementById('weeklyReportBody');
+    weeklyBody.innerHTML = '';
+    if (data.weekly && Array.isArray(data.weekly)) {
+        data.weekly.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.week || ''}</td>
+                <td>${row.totalIncome || ''}</td>
+                <td>${row.totalExpense || ''}</td>
+                <td>${row.savings || ''}</td>
+            `;
+            weeklyBody.appendChild(tr);
+        });
+    }
+    const monthlyBody = document.getElementById('expenseReportBody');
+    monthlyBody.innerHTML = '';
+    if (data.monthly && Array.isArray(data.monthly)) {
+        data.monthly.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.date || ''}</td>
+                <td>${row.description || ''}</td>
+                <td>${row.category || ''}</td>
+                <td>${row.income || ''}</td>
+                <td>${row.expense || ''}</td>
+            `;
+            monthlyBody.appendChild(tr);
+        });
+    }
+    const yearlyBody = document.getElementById('yearlyReportBody');
+    yearlyBody.innerHTML = '';
+    if (data.yearly && Array.isArray(data.yearly)) {
+        data.yearly.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.month || ''}</td>
+                <td>${row.totalIncome || ''}</td>
+                <td>${row.totalExpense || ''}</td>
+                <td>${row.savings || ''}</td>
+            `;
+            yearlyBody.appendChild(tr);
+        });
+    }
+}
+
+function downloadReportBtn(res) {
+    if(res.status === 201){
+        var a = document.createElement("a");
+        a.href = response.data.fileUrl;
+        a.download = 'myexpense.csv';
+        a.click();
+    }
 }

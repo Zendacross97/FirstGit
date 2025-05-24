@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Report</title>
+</head>
+<body>
+    <header>
+        <h1>Daily Expense Tracker</h1>
+        <h3>Your Expense Report</h3>
+        <p class="report-message"></p>  
+    </header>
+    <table class="daily-expense-report">
+        <caption>Daily Expense Report</caption>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Income</th>
+                <th>Expense</th>
+            </tr>
+        </thead>
+        <tbody id="dailyReportBody">
+            <!-- Daily report data will be populated here -->
+        </tbody>
+    </table><br><br>
+    <table class="weekly-expense-report">
+        <caption>Weekly Expense Report</caption>
+        <thead>
+            <tr>
+                <th>Week</th>
+                <th>Total Income</th>
+                <th>Total Expense</th>
+                <th>Savings</th>
+            </tr>
+        </thead>
+        <tbody id="weeklyReportBody">
+            <!-- Weekly report data will be populated here -->
+        </tbody>
+    </table><br><br>
+    <table class="monthly-expense-report">
+        <caption>Monthly Expense Report</caption>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Income</th>
+                <th>Expense</th>
+            </tr>
+        </thead>
+        <tbody id="expenseReportBody">
+            <!-- Expense report data will be populated here -->
+        </tbody>
+    </table><br><br>
+    <table class="yearly-expense-report">
+        <caption>Yearly Expense Report</caption>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Total Income</th>
+                <th>Total Expense</th>
+                <th>Savings</th>
+            </tr>
+        </thead>
+        <tbody id="yearlyReportBody">
+            <!-- Yearly report data will be populated here -->
+        </tbody>
+    </table><br><br>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.8.4/axios.min.js"></script>
+    <script src="../public/js/expense_public.js"></script>
+</body>
+</html>
