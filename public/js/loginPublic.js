@@ -56,3 +56,24 @@ function forgotPassword(event) {
         console.log(err.message);
     })
 }
+
+function resetPassword(event) {
+    event.preventDefault();
+    const password = event.target.password.value;
+    const confirmPassword = event.target.confirmPassword.value;
+    const passwordDetails = { password, confirmPassword };
+    const uuid = window.location.href.split('/').pop();
+    const p = document.querySelector('.reset-message');
+    axios.post(`http://localhost:3000/password/updatepassword/${ uuid }`, passwordDetails)
+    .then((res) => {
+        p.innerHTML = res.data.message;
+        p.style.color = 'green';
+        event.target.password.value = '';
+        event.target.confirmPassword.value = '';
+    })
+    .catch((err) => {
+        p.innerHTML = (err.response && err.response.data && err.response.data.error) ? err.response.data.error : 'An error occurred';
+        p.style.color = 'red';
+        console.log(err.message);
+    })
+}

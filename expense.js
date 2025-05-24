@@ -9,6 +9,7 @@ const indexModel = require('./models/expenseIndex');
 const orderModel = require('./models/orderModel');
 const userModel = require('./models/userModel');
 const expenseModel = require('./models/expense_model');
+const forgotPasswordModel = require('./models/forgotPasswordRequests');
 
 const app = express();
 

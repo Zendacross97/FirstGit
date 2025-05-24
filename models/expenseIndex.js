@@ -1,19 +1,25 @@
-const User = require('./userModel');
-const Expense = require('./expense_model');
-const Order = require('./orderModel');
+const Users = require('./userModel');
+const Expenses = require('./expense_model');
+const Orders = require('./orderModel');
+const ForgotPasswordRequests = require('./forgotPasswordRequests');
 
 // Define associations
 
-// User and Expense one-to-many relationship
-User.hasMany(Expense);
-Expense.belongsTo(User);
+// Users and Expenses one-to-many relationship
+Users.hasMany(Expenses);
+Expenses.belongsTo(Users);
 
-// User and Order one-to-one relationship
-User.hasOne(Order);
-Order.belongsTo(User);
+// Users and Orders one-to-one relationship
+Users.hasOne(Orders);
+Orders.belongsTo(Users);
+
+// Users and ForgotPasswordRequests has one-to-many relationship
+Users.hasMany(ForgotPasswordRequests);
+ForgotPasswordRequests.belongsTo(Users);
 
 module.exports = {
-    User,
-    Expense,
-    Order
+    Users,
+    Expenses,
+    Orders,
+    ForgotPasswordRequests
 };
