@@ -50,13 +50,27 @@ exports.addExpense = async (req, res) => {
 
 exports.getExpense = async (req, res) => {
     try {
+        const { page = 1 } = req.query; //pagination parameters
+        const limit = 5; //limit to 5 records per page
         const expense = await Expense.findAll({
-            where: { UserId: req.user.id }
+            where: { UserId: req.user.id },
+            offset: (page -1) * limit, //5 records per page
+            limit: limit, //limit to 5 records
         });
         if (!expense || expense.length === 0) {
             return res.status(404).json({ error: 'No expense details found' });
         }
-        res.status(200).json(expense);
+        const expenseCount = await Expense.count({
+            where: { UserId: req.user.id }
+        });
+        const expenseDetails = {
+            lastPage: Math.ceil(expenseCount / limit), //calculate total pages
+            currentPage: +page,
+            nextPage: (+page ) < Math.ceil(expenseCount / limit) ? +page + 1 : null,
+            previousPage: +page > 1 ? +page - 1 : null,
+            expense: expense
+        }
+        res.status(200).json(expenseDetails);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

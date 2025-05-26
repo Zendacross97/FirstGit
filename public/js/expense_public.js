@@ -22,12 +22,17 @@ function add(event){
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    checkMembership();
+    getExpense(page = 1);
+});
+
+function checkMembership(){
     axios.get('http://localhost:3000/expense/payment_status', { headers: { 'Authorization': token } })
     .then((res) => {
         const header = document.querySelector('.header');
         const h = header.querySelector('#premium');
         if (res.data.orderStatus === 'SUCCESS') {
-            h.innerHTML = 'You are a premium user <button id="premiumBtn">Show leaderboard</button> <button id="reportBtn">Show Report</button><button id="downloadBtn">Download Report</button>';
+            h.innerHTML = 'You are a premium user <button id="premiumBtn">Show leaderboard</button> <button id="reportBtn">Show Report</button>';
             const premiumBtn = header.querySelector('#premiumBtn');
             premiumBtn.onclick = () => {
                 axios.get('http://localhost:3000/expense/leaderboard', { headers: { 'Authorization': token } })
@@ -42,40 +47,25 @@ window.addEventListener("DOMContentLoaded", () => {
             reportBtn.onclick = () => {
                 window.location.href = `../views/expenseReport.html`;
             }
-            const downloadBtn = header.querySelector('#downloadBtn');
-            downloadBtn.onclick = () => {
-                axios.get('http://localhost:3000/expense/downloadReport', { headers: { 'Authorization': token } })
-                .then((res) => {
-                    downloadReportBtn(res);
-                })
-                .catch((err) => {
-                    const p = document.querySelector('.report-message');
-                    p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
-                });
-            }
         }
     })
-    axios.get('http://localhost:3000/expense/getExpense', { headers: { 'Authorization': token } })
+}
+
+function getExpense(page) {
+    const ul = document.querySelector(`ul`);
+    ul.innerHTML = ''; // Clear previous expenses
+    axios.get(`http://localhost:3000/expense/getExpense?page=${page}`, { headers: { 'Authorization': token } })
     .then((res) => {
-        for (let i = 0; i < res.data.length; i++) {
-            showExpense(res.data[i]);
+        for (let i = 0; i < res.data.expense.length; i++) {
+            showExpense(res.data.expense[i]);
         }
+        showPageination(res.data);
     })
     .catch((err) => {
         const p = document.querySelector('.expense_message');
-        p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
+        p.innerHTML = err.response.data.error ? err.response.data.error : err.message;
     })
-    if (window.location.pathname.endsWith("expenseReport.html")) {
-        axios.get('http://localhost:3000/expense/report', { headers: { 'Authorization': token } })
-        .then((res) => {
-            populateExpenseReport(res.data);
-        })
-        .catch((err) => {
-            const p = document.querySelector('.report-message');
-            p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
-        });
-    }
-});
+}
 
 function showExpense(data){
     const ul=document.querySelector(`ul`);
@@ -86,6 +76,46 @@ function showExpense(data){
     const Delete = li.querySelector(`#delete_${data.id}`);
     Delete.onclick = () => {
         deleteExpense(data.id);
+    }
+}
+
+function showPageination({ lastPage, currentPage, nextPage, previousPage }) {
+    const pagination = document.createElement('div');
+    pagination.className = 'pagination';
+    document.body.appendChild(pagination);
+    if (previousPage) {
+        const previousBtn = document.createElement('button');
+        previousBtn.innerHTML = `${previousPage}`;
+        previousBtn.onclick = () => {
+            pagination.innerHTML = ''; // Clear previous pagination
+            getExpense(previousPage);
+        }
+        pagination.appendChild(previousBtn);
+    }
+    const currentBtn = document.createElement('button');
+    currentBtn.innerHTML = `${currentPage}`;
+    currentBtn.onclick = () => {
+        pagination.innerHTML = ''; // Clear previous pagination
+        getExpense(currentPage);
+    }
+    pagination.appendChild(currentBtn);
+    if (nextPage) {
+        const nextBtn = document.createElement('button');
+        nextBtn.innerHTML = `${nextPage}`;
+        nextBtn.onclick = () => {
+            pagination.innerHTML = ''; // Clear previous pagination
+            getExpense(nextPage);
+        }
+        pagination.appendChild(nextBtn);
+    }
+    if (lastPage !== currentPage && lastPage !== nextPage) {
+        const lastBtn = document.createElement('button');
+        lastBtn.innerHTML = `${lastPage}`;
+        lastBtn.onclick = () => {
+            pagination.innerHTML = ''; // Clear previous pagination
+            getExpense(lastPage);
+        }
+        pagination.appendChild(lastBtn);
     }
 }
 
@@ -126,75 +156,4 @@ function showLeaderboard(data){
     }
     document.body.appendChild(h);
     document.body.appendChild(ul);
-}
-
-function populateExpenseReport(data) {
-    // Example: Fill daily report table
-    const dailyBody = document.getElementById('dailyReportBody');
-    dailyBody.innerHTML = '';
-    if (data.daily && Array.isArray(data.daily)) {
-        data.daily.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${row.date || ''}</td>
-                <td>${row.description || ''}</td>
-                <td>${row.category || ''}</td>
-                <td>${row.income || ''}</td>
-                <td>${row.expense || ''}</td>
-            `;
-            dailyBody.appendChild(tr);
-        });
-    }
-     const weeklyBody = document.getElementById('weeklyReportBody');
-    weeklyBody.innerHTML = '';
-    if (data.weekly && Array.isArray(data.weekly)) {
-        data.weekly.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${row.week || ''}</td>
-                <td>${row.totalIncome || ''}</td>
-                <td>${row.totalExpense || ''}</td>
-                <td>${row.savings || ''}</td>
-            `;
-            weeklyBody.appendChild(tr);
-        });
-    }
-    const monthlyBody = document.getElementById('expenseReportBody');
-    monthlyBody.innerHTML = '';
-    if (data.monthly && Array.isArray(data.monthly)) {
-        data.monthly.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${row.date || ''}</td>
-                <td>${row.description || ''}</td>
-                <td>${row.category || ''}</td>
-                <td>${row.income || ''}</td>
-                <td>${row.expense || ''}</td>
-            `;
-            monthlyBody.appendChild(tr);
-        });
-    }
-    const yearlyBody = document.getElementById('yearlyReportBody');
-    yearlyBody.innerHTML = '';
-    if (data.yearly && Array.isArray(data.yearly)) {
-        data.yearly.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${row.month || ''}</td>
-                <td>${row.totalIncome || ''}</td>
-                <td>${row.totalExpense || ''}</td>
-                <td>${row.savings || ''}</td>
-            `;
-            yearlyBody.appendChild(tr);
-        });
-    }
-}
-
-function downloadReportBtn(res) {
-    if(res.status === 201){
-        var a = document.createElement("a");
-        a.href = response.data.fileUrl;
-        a.download = 'myexpense.csv';
-        a.click();
-    }
 }
