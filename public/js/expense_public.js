@@ -1,4 +1,13 @@
 const token = localStorage.getItem('token');
+let page = 1, lastPage = 1, limit = localStorage.getItem(`expensePerPage`) || 5;
+
+const expensePerPage = document.querySelector('#expense_per_page');
+expensePerPage.addEventListener('change', (event) => {
+    event.preventDefault();
+    localStorage.setItem(`expensePerPage`, event.target.value);
+    limit = event.target.value;
+    getExpense(page, limit);
+})
 
 function add(event){
     event.preventDefault();
@@ -10,7 +19,8 @@ function add(event){
     .then((res) => {
         const p = document.querySelector('.expense_message');
         p.innerHTML = res.data.message;
-        showExpense(res.data.expense)
+        console.log('lastPage: ', lastPage)
+        getExpense(lastPage+1, limit); // Refresh the expense list
     })
     .catch((err) => {
         const p = document.querySelector('.expense_message');
@@ -22,8 +32,9 @@ function add(event){
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    expensePerPage.value = limit; // Set the initial value of the dropdown
     checkMembership();
-    getExpense(page = 1);
+    getExpense(page, limit);
 });
 
 function checkMembership(){
@@ -51,10 +62,10 @@ function checkMembership(){
     })
 }
 
-function getExpense(page) {
+function getExpense(page, limit) {
     const ul = document.querySelector(`ul`);
     ul.innerHTML = ''; // Clear previous expenses
-    axios.get(`http://localhost:3000/expense/getExpense?page=${page}`, { headers: { 'Authorization': token } })
+    axios.get(`http://localhost:3000/expense/getExpense?page=${page}&limit=${+limit}`, { headers: { 'Authorization': token } })
     .then((res) => {
         for (let i = 0; i < res.data.expense.length; i++) {
             showExpense(res.data.expense[i]);
@@ -62,8 +73,16 @@ function getExpense(page) {
         showPageination(res.data);
     })
     .catch((err) => {
-        const p = document.querySelector('.expense_message');
-        p.innerHTML = err.response.data.error ? err.response.data.error : err.message;
+        if (page > 1) {
+            const oldPagination = document.querySelector('.pagination');
+             if (oldPagination) document.body.removeChild(oldPagination);
+             page--; // Decrement page if an error occurs
+            getExpense(page, limit); // Fetch the previous page
+        }
+        else {
+            const p = document.querySelector('.expense_message');
+            p.innerHTML = err.response.data.error ? err.response.data.error : err.message;
+        }
     })
 }
 
@@ -79,41 +98,51 @@ function showExpense(data){
     }
 }
 
-function showPageination({ lastPage, currentPage, nextPage, previousPage }) {
+function showPageination({ totalPages, currentPage, nextPage, previousPage }) {
+    // Remove old pagination if it exists
+    const oldPagination = document.querySelector('.pagination');
+    if (oldPagination) document.body.removeChild(oldPagination);
+    // Create new pagination
     const pagination = document.createElement('div');
     pagination.className = 'pagination';
     document.body.appendChild(pagination);
     if (previousPage) {
         const previousBtn = document.createElement('button');
+        previousBtn.id = 'previousBtn';
         previousBtn.innerHTML = `${previousPage}`;
         previousBtn.onclick = () => {
             pagination.innerHTML = ''; // Clear previous pagination
-            getExpense(previousPage);
+            getExpense(previousPage, limit); // Fetch the previous page
         }
         pagination.appendChild(previousBtn);
     }
     const currentBtn = document.createElement('button');
-    currentBtn.innerHTML = `${currentPage}`;
+    currentBtn.id = 'currentBtn';
+    page= currentPage; // Update global page variable
+    lastPage = totalPages; // Update lastPage variable
+    currentBtn.innerHTML = `${page}`;
     currentBtn.onclick = () => {
         pagination.innerHTML = ''; // Clear previous pagination
-        getExpense(currentPage);
+        getExpense(page, limit);
     }
     pagination.appendChild(currentBtn);
     if (nextPage) {
         const nextBtn = document.createElement('button');
+        nextBtn.id = 'nextBtn';
         nextBtn.innerHTML = `${nextPage}`;
         nextBtn.onclick = () => {
             pagination.innerHTML = ''; // Clear previous pagination
-            getExpense(nextPage);
+            getExpense(nextPage, limit); // Fetch the next page
         }
         pagination.appendChild(nextBtn);
     }
-    if (lastPage !== currentPage && lastPage !== nextPage) {
+    if (totalPages !== currentPage && totalPages !== nextPage) {
         const lastBtn = document.createElement('button');
-        lastBtn.innerHTML = `${lastPage}`;
+        lastBtn.id = 'lastBtn';
+        lastBtn.innerHTML = `${totalPages}`;
         lastBtn.onclick = () => {
             pagination.innerHTML = ''; // Clear previous pagination
-            getExpense(lastPage);
+            getExpense(totalPages, limit);
         }
         pagination.appendChild(lastBtn);
     }
@@ -128,6 +157,7 @@ function deleteExpense(expenseId){
         p.innerHTML = res.data.message;
         const Delete = li.querySelector(`#delete_${expenseId}`);
         ul.removeChild(Delete.parentElement);
+        getExpense(page, limit);
     })
     .catch(err => {
         const p = document.querySelector('.expense_message');
