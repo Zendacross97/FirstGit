@@ -21,8 +21,8 @@ exports.addExpense = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
         console.log('id:', req.user);
-        const { amount, description, category } = req.body; //fetch data from request body
-        if (!amount || !description || !category) { //check if all fields are present
+        const { amount, description, category, note } = req.body; //fetch data from request body
+        if (!amount || !description || !category ) { //check if all fields are present
             await transaction.rollback();
             return res.status(400).json({ error: 'Expense fields are incomplete' });
         }
@@ -54,7 +54,7 @@ exports.getExpense = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const expense = await Expense.findAll({
-            // where: { UserId: req.user.id },
+            where: { UserId: req.user.id },
             offset: (page - 1) * limit,
             limit: limit,
         });
@@ -62,7 +62,7 @@ exports.getExpense = async (req, res) => {
             return res.status(404).json({ error: 'No expense details found' });
         }
         const expenseCount = await Expense.count({
-            // where: { UserId: req.user.id }
+            where: { UserId: req.user.id }
         });
         const expenseDetails = {
             totalPages: Math.ceil(expenseCount / limit),

@@ -14,7 +14,8 @@ function add(event){
     const amount = event.target.amount.value;
     const description = event.target.description.value;
     const category = event.target.category.value;
-    let expenseDetails = { amount, description, category };
+    const note = event.target.note.value;
+    let expenseDetails = { amount, description, category, note };
     axios.post('http://localhost:3000/expense/addExpense', expenseDetails, { headers: { 'Authorization': token } })
     .then((res) => {
         const p = document.querySelector('.expense_message');
@@ -90,7 +91,7 @@ function showExpense(data){
     const ul=document.querySelector(`ul`);
     const li=document.createElement(`li`);
     li.id = `li_${data.id}`;
-    li.innerHTML = `${data.amount} - ${data.description} - ${data.category} <button id="delete_${data.id}">Delete Expense</button>`;
+    li.innerHTML = `${data.amount} - ${data.description} - ${data.category} - ${(data.note || 'no comments')} <button id="delete_${data.id}">Delete Expense</button>`;
     ul.appendChild(li);
     const Delete = li.querySelector(`#delete_${data.id}`);
     Delete.onclick = () => {
