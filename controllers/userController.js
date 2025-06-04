@@ -1,8 +1,7 @@
-const User = require('../models/userModel');
-const ForgotPasswordRequests = require('../models/forgotPasswordRequests');
+const UserServices = require('../services/userServices');
+const BrevoService = require('../services/brevoService');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const Sib = require('sib-api-v3-sdk');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
@@ -12,7 +11,8 @@ const signUpUser = async (req, res) => {
         if (!name || !email || !password) {
              return res.status(400).json({ error: 'Sign-up credentials are incomplete' });
         }
-        const userDetails = await User.findAll({ where: { email: email } });
+        const userDetails = await UserServices.getUserByEmail(email); // Using the service to fetch user details
+        // Check if user already exists
         if (userDetails.length !== 0) {
             return res.status(400).json({ error: 'User already exists' });
         }
@@ -21,7 +21,7 @@ const signUpUser = async (req, res) => {
                 return res.status(500).json({ error: 'Something went wrong' });
             }
             else {
-                await User.create({ name, email, password: hash });
+                await UserServices.createUser(name, email, hash); // Using the service to create user
                 res.status(201).json({ message: 'User created successfully' });
             }
         });
@@ -40,7 +40,9 @@ const logInUser = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ error: 'Login credentials are incomplete' });
         }
-        const userDetails = await User.findAll( { where: { email: email } } );
+        // const userDetails = await User.findAll( { where: { email: email } } );
+        const userDetails = await UserServices.getUserByEmail(email); // Using the service to fetch user details
+        // Check if user exists
          if (userDetails.length === 0) {
             return res.status(404).json({ error: 'User not found' });
          }
@@ -67,41 +69,13 @@ const forgotUser = async (req, res) => {
             return res.status(400).json({ error: 'Email credential is incomplete'})
         }
         const uuid = uuidv4();
-        const userId = await User.findAll({ 
-            where: { email: email },
-            attributes: ['id']
-        });
+        const userId = await UserServices.getUserByEmail(email); // Using the service to fetch user details
+        // Check if user exists
         if (userId.length === 0) {
             return res.status(404).json({ error: 'User not found' });
          }
-        await ForgotPasswordRequests.create({
-            uuid: uuid,
-            isactive: true,
-            UserId: userId[0].id
-        })
-        const client = Sib.ApiClient.instance
-        const apiKey = client.authentications['api-key'];
-        apiKey.apiKey = process.env.BREVO_API_KEY;
-        const tranEmailApi = new Sib.TransactionalEmailsApi()
-        const sender = {
-            email: 'sidhchakraborty66@gmail.com',
-            name: 'Siddhartha Chakraborty'
-        }
-        const receiver = [{
-            email: `${ email }`
-        }]
-        tranEmailApi.sendTransacEmail({
-            sender,
-            to: receiver,
-            subject: 'Reset Password',
-            textContent: 'Click on the link to reset your { { params.role } }.',
-            params: {
-                role: 'Password'
-            },
-            htmlContent: `<h1> Daily Expense Tracker <h1>
-                        <h3> Your password reset link <h3>
-                        <p> Click here: <a href="http://localhost:3000/password/resetpassword/${uuid}">Reset</a><p>`
-        })
+        await UserServices.createUuid(uuid, userId[0].id); // Using the service to create UUID
+        await BrevoService.sendResetPasswordEmail(email, uuid); // Using the service to send reset password email
         res.status(200).json({ message: 'Password reset link has been sent on your email' });
 
     } catch (error) {
@@ -112,12 +86,8 @@ const forgotUser = async (req, res) => {
 const resetPassword = async (req, res) => {
     try {
         const { uuid } = req.params;
-        const resetDetails = await ForgotPasswordRequests.findAll({
-            where: {
-                uuid: uuid,
-                isactive: true
-            }
-        })
+        const resetDetails = await UserServices.getUuid(uuid); // Using the service to fetch UUID details
+        // Check if user exists
         if (resetDetails.length === 0) {
             return res.status(404).send('User not found');
          }
@@ -137,12 +107,8 @@ const updatePassword = async (req, res) => {
         if (password !== confirmPassword) { //confirm password
             return res.status(400).json({ error: 'Password and confirm password do not match' });
         }
-        const resetDetails = await ForgotPasswordRequests.findAll({ //fetch the user id
-            where: {
-                uuid: uuid,
-                isactive: true
-            }
-        })
+        const resetDetails = await UserServices.getUuid(uuid); // Using the service to fetch UUID details
+        // Check if user exists
         if (resetDetails.length === 0) {
             return res.status(404).json({ error: 'User not found' });
          }
@@ -151,14 +117,8 @@ const updatePassword = async (req, res) => {
                 return res.status(500).json({ error: 'Something went wrong' });
             }
             else {
-                await User.update( //update the password
-                    { password: hash },
-                    { where: { id: resetDetails[0].UserId } }
-                );
-                await ForgotPasswordRequests.update( //update the isactive status
-                    { isactive: false },
-                    { where: { uuid: uuid } }
-                )
+                await UserServices.updateUserPassword(hash, resetDetails[0].UserId); // Using the service to update user password
+                await UserServices.updateUuidStatus(uuid); // Using the service to update UUID status
                 res.status(200).json({ message: 'Password updated successfully' });
             }
         });

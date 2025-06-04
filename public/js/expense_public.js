@@ -18,18 +18,20 @@ function add(event){
     let expenseDetails = { amount, description, category, note };
     axios.post('http://localhost:3000/expense/addExpense', expenseDetails, { headers: { 'Authorization': token } })
     .then((res) => {
-        const p = document.querySelector('.expense_message');
-        p.innerHTML = res.data.message;
-        console.log('lastPage: ', lastPage)
+        // const p = document.querySelector('.expense_message');
+        // p.innerHTML = res.data.message;
+        // console.log('lastPage: ', lastPage)
         getExpense(lastPage+1, limit); // Refresh the expense list
     })
     .catch((err) => {
         const p = document.querySelector('.expense_message');
         p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
+        p.style.color = 'red';
     })
     event.target.amount.value = '';
     event.target.description.value = '';
     event.target.category.value = '';
+    event.target.note.value = '';
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -52,7 +54,14 @@ function checkMembership(){
                     showLeaderboard(res.data);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    const h = document.createElement('h2');
+                    h.id = 'leaderboard';
+                    h.innerHTML = 'Leaderboard:';
+                    const p = document.createElement('p');
+                    p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occurred';
+                    p.style.color = 'red';
+                    document.body.appendChild(h);
+                    document.body.appendChild(p);
                 })
             }
             const reportBtn = header.querySelector('#reportBtn');
@@ -83,6 +92,7 @@ function getExpense(page, limit) {
         else {
             const p = document.querySelector('.expense_message');
             p.innerHTML = err.response.data.error ? err.response.data.error : err.message;
+            p.style.color = 'red';
         }
     })
 }
@@ -187,4 +197,45 @@ function showLeaderboard(data){
     }
     document.body.appendChild(h);
     document.body.appendChild(ul);
+}
+
+const header = document.querySelector('.expense_header');
+const downloadBtn = header.querySelector('#downloadBtn');
+downloadBtn.onclick = () => {
+    axios.get('http://localhost:3000/expense/downloadExpenses', { headers: { 'Authorization': token } })
+    .then((res) => {
+        var a = document.createElement("a");
+        a.href = res.data.fileURL;
+        a.download = 'myexpenses.csv';
+        a.click();
+        showDownloadedfiles(res.data.downloadDetails);
+    })
+    .catch((err) => {
+        const p = document.querySelector('.expense_message');
+        p.innerHTML = err.response.data.error ? err.response.data.error : 'An error occured';
+        p.style.color = 'red';
+    });
+}
+
+function showDownloadedfiles(data) {
+    // Remove old downloaded files list if it exists
+    const oldHeader = document.querySelector('.downloaded_files_header');
+    if (oldHeader) document.body.removeChild(oldHeader);
+    const oldFiles = document.querySelector('.downloaded_files');
+    if (oldFiles) document.body.removeChild(oldFiles);
+    // Create new downloaded files list
+    const h = document.createElement('h2');
+    h.className = 'downloaded_files_header';
+    h.innerHTML = 'Downloaded Files:';
+    document.body.appendChild(h);
+    // Create a new unordered list for downloaded files
+    const ul = document.createElement('ul');
+    ul.className = 'downloaded_files';
+    for (let i = 0; i < data.length; i++) {
+        const li = document.createElement('li');
+        li.innerHTML = `Date: ${data[i].Date} - File URL: <a href="${data[i].fileUrl}" download>${data[i].fileUrl}</a>`;
+        ul.appendChild(li);
+    }
+    document.body.appendChild(ul);
+
 }

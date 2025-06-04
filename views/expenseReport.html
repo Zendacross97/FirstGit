@@ -8,68 +8,54 @@
 <body>
     <header>
         <h1>Daily Expense Tracker</h1>
-        <h3>Your Expense Report</h3>
+        <h3>Your Expense Report: </h3>
         <p class="report-message"></p>  
     </header>
-    <table class="daily-expense-report">
-        <caption>Daily Expense Report</caption>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Income</th>
-                <th>Expense</th>
-            </tr>
-        </thead>
-        <tbody id="dailyReportBody">
-            <!-- Daily report data will be populated here -->
-        </tbody>
-    </table><br><br>
-    <table class="weekly-expense-report">
-        <caption>Weekly Expense Report</caption>
-        <thead>
-            <tr>
-                <th>Week</th>
-                <th>Total Income</th>
-                <th>Total Expense</th>
-                <th>Savings</th>
-            </tr>
-        </thead>
-        <tbody id="weeklyReportBody">
-            <!-- Weekly report data will be populated here -->
-        </tbody>
-    </table><br><br>
+
+    <label for="yearSelector">Select Year:</label>
+    <select id="yearSelector"></select>
+        
     <table class="monthly-expense-report">
-        <caption>Monthly Expense Report</caption>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Income</th>
-                <th>Expense</th>
-            </tr>
-        </thead>
-        <tbody id="expenseReportBody">
-            <!-- Expense report data will be populated here -->
-        </tbody>
-    </table><br><br>
-    <table class="yearly-expense-report">
-        <caption>Yearly Expense Report</caption>
         <thead>
             <tr>
                 <th>Month</th>
-                <th>Total Income</th>
                 <th>Total Expense</th>
-                <th>Savings</th>
             </tr>
         </thead>
-        <tbody id="yearlyReportBody">
-            <!-- Yearly report data will be populated here -->
-        </tbody>
+        <tbody class="monthly-report"></tbody>
     </table><br><br>
+    <p class="monthly-report-message"></p>
+
+    <label for="monthSelector">Select Month:</label>
+    <select name="monthSelector" id="monthSelector">
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+    </select>
+
+    <table class="daily-expense-report">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Expense</th>
+            </tr>
+        </thead>
+        <tbody class="daily-report"></tbody>
+    </table>
+    <p class="daily-report-message"></p>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.8.4/axios.min.js"></script>
-    <script src="../public/js/expense_public.js"></script>
+    <script src="../public/js/expenseReportPublic.js"></script>
 </body>
 </html>
